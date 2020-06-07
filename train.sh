@@ -1,0 +1,1 @@
+python ./train.py  --csv_train csv_train.csv --csv_classes csv_classes.csv --depth 18 
