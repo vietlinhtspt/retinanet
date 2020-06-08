@@ -87,7 +87,7 @@ def main(args=None):
         raise ValueError(
             'Unsupported model depth, must be one of 18, 34, 50, 101, 152')
 
-    use_gpu = False
+    use_gpu = True
 
     if use_gpu:
         if torch.cuda.is_available():

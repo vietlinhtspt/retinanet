@@ -46,7 +46,7 @@ def main(args=None):
 
     retinanet = torch.load(parser.model)
 
-    use_gpu = False
+    use_gpu = True
 
     if use_gpu:
         if torch.cuda.is_available():
