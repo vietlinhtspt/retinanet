@@ -1,1 +1,1 @@
-python ./visualize.py --csv_classes csv_classes.csv --csv_val csv_val.csv --model ./models/retinanet_40.pt
+python ./visualize.py --csv_classes csv_classes.csv --csv_val csv_val.csv --model ./models/retinanet_2.pt

@@ -12,7 +12,6 @@ from retinanet import model
 from retinanet.dataloader import CSVDataset, collater, Resizer, AspectRatioBasedSampler, Augmenter, Normalizer
 from torch.utils.data import DataLoader
 
-
 from retinanet import csv_eval
 
 assert torch.__version__.split('.')[0] == '1'
@@ -88,7 +87,7 @@ def main(args=None):
         raise ValueError(
             'Unsupported model depth, must be one of 18, 34, 50, 101, 152')
 
-    use_gpu = True
+    use_gpu = False
 
     if use_gpu:
         if torch.cuda.is_available():
@@ -164,17 +163,25 @@ def main(args=None):
             print('Evaluating dataset')
 
             mAP = csv_eval.evaluate(dataset_val, retinanet)
+            print("[INFO] mAP: ", mAP)
 
         scheduler.step(np.mean(epoch_loss))
-
-        if not os.path.exists("models"):
-            os.makedirs("models")
-        torch.save(retinanet.module,
-                   './models/retinanet_{}.pt'.format(epoch_num))
+        if os.path.exists("../drive/My\ Drive/Colab\ Notebooks/models/facenet"):
+            torch.save(
+                retinanet.module, '../drive/My\ Drive/Colab\ Notebooks/models/facenet/retinanet_{}.pt'.format(epoch_num))
+            torch.save(
+                retinanet.module, '../drive/My\ Drive/Colab\ Notebooks/models/facenet/retinanet_last.pt')
+        else:
+            if not os.path.exists("models"):
+                os.makedirs("models")
+            torch.save(retinanet.module,
+                       './models/retinanet_{}.pt'.format(epoch_num))
+            torch.save(retinanet.module,
+                       './models/retinanet_last.pt')
 
     retinanet.eval()
 
-    torch.save(retinanet, 'model_final.pt')
+    # torch.save(retinanet, 'model_final.pt')
 
 
 if __name__ == '__main__':
