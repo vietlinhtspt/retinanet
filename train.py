@@ -30,6 +30,10 @@ def main(args=None):
     parser.add_argument(
         '--csv_val', help='Path to file containing validation annotations (optional, see readme)')
 
+    parser.add_argument('--save_models', help='Path to location saving models')
+
+    parser.add_argument('--num_worker', help="Num worker")
+
     parser.add_argument(
         '--depth', help='Resnet depth, must be one of 18, 34, 50, 101, 152', type=int, default=50)
     parser.add_argument('--epochs', help='Number of epochs',
@@ -166,12 +170,20 @@ def main(args=None):
             print("[INFO] mAP: ", mAP)
 
         scheduler.step(np.mean(epoch_loss))
-        if os.path.exists("../drive/My\ Drive/Colab\ Notebooks/models/facenet"):
+        # if os.path.exists("../drive/My\ Drive/Colab\ Notebooks/models/facenet"):
+        if parser.save_models is not None & os.path.exists(parser.save_models):
+            path = os.path.join(parser.save_models, f'retinanet_{}.pt'.format(epoch_num))
+            print("[INFO] Saving models at: {}".format(path))
+            path_last = os.path.join(
+                parser.save_models, f'retinanet_last.pt')
             torch.save(
-                retinanet.module, '../drive/My\ Drive/Colab\ Notebooks/models/facenet/retinanet_{}.pt'.format(epoch_num))
+                retinanet.module, path)
             torch.save(
-                retinanet.module, '../drive/My\ Drive/Colab\ Notebooks/models/facenet/retinanet_last.pt')
+                retinanet.module, path_last)
         else:
+            print("[INFO] Not found location: {}".format(
+                os.path.exists(parser.save_models)))
+            print("[INFO] Auto saving model in: models/")
             if not os.path.exists("models"):
                 os.makedirs("models")
             torch.save(retinanet.module,
