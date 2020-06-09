@@ -63,6 +63,8 @@ def main(args=None):
         dataset_val = CSVDataset(train_file=parser.csv_val, class_list=parser.csv_classes,
                                  transform=transforms.Compose([Normalizer(), Resizer()]))
 
+    print(
+        f"[INFO] batch_size: {parser.batch_size}, num_workers: {parser.num_workers}")
     sampler = AspectRatioBasedSampler(
         dataset_train, batch_size=parser.batch_size, drop_last=False)
     dataloader_train = DataLoader(
