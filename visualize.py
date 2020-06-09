@@ -44,10 +44,17 @@ def main(args=None):
     dataloader_val = DataLoader(
         dataset_val, num_workers=1, collate_fn=collater, batch_sampler=sampler_val)
 
-    retinanet = torch.load(parser.model)
-
     use_gpu = True
 
+    if use_gpu:
+        if torch.cuda.is_available():
+            retinanet = torch.load(parser.model)
+        else:
+            print("[INFO] Not GPU available. Use CPU load model")
+            retinanet = torch.load(
+                parser.model, map_location=torch.device('cpu'))
+    else:
+        retinanet = torch.load(parser.model, map_location=torch.device('cpu'))
     if use_gpu:
         if torch.cuda.is_available():
             retinanet = retinanet.cuda()
@@ -80,7 +87,8 @@ def main(args=None):
                 scores, classification, transformed_anchors = retinanet(
                     data['img'].float())
             print('Elapsed time: {}'.format(time.time()-st))
-            idxs = np.where(scores.cpu() > 0.5)
+
+            # Load img
             img = np.array(255 * unnormalize(data['img'][0, :, :, :])).copy()
 
             img[img < 0] = 0
@@ -90,22 +98,48 @@ def main(args=None):
 
             img = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_BGR2RGB)
 
+            # Draw true bbox
+            true_bbox = data['annot'][0].numpy()
+            for index in range(true_bbox.shape[0]):
+
+                x1 = int(true_bbox[index][0])
+                y1 = int(true_bbox[index][1])
+                x2 = int(true_bbox[index][2])
+                y2 = int(true_bbox[index][3])
+                # print("[TEST] Label: ",
+                #       dataset_val.labels[int(true_bbox[index][4])])
+                # label_name = dataset_val.labels[int(true_bbox[index][4])]
+                # draw_caption(img, (x1, y1, x2, y2), label_name)
+
+                cv2.rectangle(img, (x1, y1), (x2, y2),
+                              color=(0, 255, 0), thickness=2)
+
+            # Draw pred bbox
+            idxs = np.where(scores.cpu() > 0.5)
             for j in range(idxs[0].shape[0]):
                 bbox = transformed_anchors[idxs[0][j], :]
                 x1 = int(bbox[0])
                 y1 = int(bbox[1])
                 x2 = int(bbox[2])
                 y2 = int(bbox[3])
+
                 label_name = dataset_val.labels[int(
-                    classification[idxs[0][j]])]
+                    classification[idxs[0][j]])] + "-" + str(scores.cpu().numpy()[idxs[0][j]])
                 draw_caption(img, (x1, y1, x2, y2), label_name)
 
                 cv2.rectangle(img, (x1, y1), (x2, y2),
                               color=(0, 0, 255), thickness=2)
-                print(label_name)
+                # print("[INFO] Labels in image: ", label_name)
+            if not os.path.exists("outputs"):
+                os.makedirs("outputs")
+            # cv2.imshow('img', img)
 
-            cv2.imshow('img', img)
-            cv2.waitKey(0)
+            filename = str(idx) + ".jpg"
+            savepath = os.path.join("./outputs", filename)
+            # print("[INFO] Numpy: ", data["annot"].numpy())
+            print("[INFO] Save image at: ", savepath)
+            cv2.imwrite(savepath, img)
+            # cv2.waitKey(0)
 
 
 if __name__ == '__main__':

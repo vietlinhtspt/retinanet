@@ -47,11 +47,11 @@ def main(args=None):
     # Create the data loaders
 
     if parser.csv_train is None:
-        raise ValueError('Must provide --csv_train when training on COCO,')
+        raise ValueError('Must provide --csv_train,')
 
     if parser.csv_classes is None:
         raise ValueError(
-            'Must provide --csv_classes when training on COCO,')
+            'Must provide --csv_classes,')
 
     dataset_train = CSVDataset(train_file=parser.csv_train, class_list=parser.csv_classes,
                                transform=transforms.Compose([Normalizer(), Augmenter(), Resizer()]))
