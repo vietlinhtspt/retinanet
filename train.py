@@ -177,9 +177,9 @@ def main(args=None):
         if parser.save_models is not None:
             if os.path.exists(parser.save_models):
                 path = os.path.join(parser.save_models,
-                                    f'retinanet_{epoch_num}.pt'
+                                    f'retinanet_{epoch_num}.pt')
                 print(f"[INFO] Saving model at: {path}")
-                path_last=os.path.join(
+                path_last = os.path.join(
                     parser.save_models, 'retinanet_last.pt')
                 print(f"[INFO] Saving last model at: {path_last}")
                 torch.save(
@@ -187,7 +187,7 @@ def main(args=None):
                 torch.save(
                     retinanet.module, path_last)
             else:
-                print(f"[INFO] Not found location: {parser.save_models}"
+                print(f"[INFO] Not found location: {parser.save_models}")
                 print("[INFO] Auto saving model in: models/")
                 if not os.path.exists("models"):
                     os.makedirs("models")
