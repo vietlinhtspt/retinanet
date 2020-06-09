@@ -32,7 +32,10 @@ def main(args=None):
 
     parser.add_argument('--save_models', help='Path to location saving models')
 
-    parser.add_argument('--num_worker', help="Num worker")
+    parser.add_argument('--num_workers', help="Num workers",
+                        type=int, default=3)
+
+    parser.add_argument('--batch_size', help="Batch size", type=int, default=2)
 
     parser.add_argument(
         '--depth', help='Resnet depth, must be one of 18, 34, 50, 101, 152', type=int, default=50)
@@ -61,15 +64,15 @@ def main(args=None):
                                  transform=transforms.Compose([Normalizer(), Resizer()]))
 
     sampler = AspectRatioBasedSampler(
-        dataset_train, batch_size=2, drop_last=False)
+        dataset_train, batch_size=parser.batch_size, drop_last=False)
     dataloader_train = DataLoader(
-        dataset_train, num_workers=3, collate_fn=collater, batch_sampler=sampler)
+        dataset_train, num_workers=parser.num_workers, collate_fn=collater, batch_sampler=sampler)
 
     if dataset_val is not None:
         sampler_val = AspectRatioBasedSampler(
-            dataset_val, batch_size=1, drop_last=False)
+            dataset_val, batch_size=parser.batch_size, drop_last=False)
         dataloader_val = DataLoader(
-            dataset_val, num_workers=3, collate_fn=collater, batch_sampler=sampler_val)
+            dataset_val, num_workers=parser.num_workers, collate_fn=collater, batch_sampler=sampler_val)
 
     # Create the model
     if parser.depth == 18:
@@ -174,17 +177,17 @@ def main(args=None):
         if parser.save_models is not None:
             if os.path.exists(parser.save_models):
                 path = os.path.join(parser.save_models,
-                                    'retinanet_{}.pt'.format(epoch_num))
-                print("[INFO] Saving models at: {}".format(path))
-                path_last = os.path.join(
+                                    f'retinanet_{epoch_num}.pt'
+                print(f"[INFO] Saving model at: {path}")
+                path_last=os.path.join(
                     parser.save_models, 'retinanet_last.pt')
+                print(f"[INFO] Saving last model at: {path_last}")
                 torch.save(
                     retinanet.module, path)
                 torch.save(
                     retinanet.module, path_last)
             else:
-                print("[INFO] Not found location: {}".format(
-                    parser.save_models))
+                print(f"[INFO] Not found location: {parser.save_models}"
                 print("[INFO] Auto saving model in: models/")
                 if not os.path.exists("models"):
                     os.makedirs("models")
