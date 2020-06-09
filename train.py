@@ -172,10 +172,11 @@ def main(args=None):
         scheduler.step(np.mean(epoch_loss))
         # if os.path.exists("../drive/My\ Drive/Colab\ Notebooks/models/facenet"):
         if parser.save_models is not None & os.path.exists(parser.save_models):
-            path = os.path.join(parser.save_models, f'retinanet_{}.pt'.format(epoch_num))
+            path = os.path.join(parser.save_models,
+                                'retinanet_{}.pt'.format(epoch_num))
             print("[INFO] Saving models at: {}".format(path))
             path_last = os.path.join(
-                parser.save_models, f'retinanet_last.pt')
+                parser.save_models, 'retinanet_last.pt')
             torch.save(
                 retinanet.module, path)
             torch.save(
