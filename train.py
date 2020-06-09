@@ -171,19 +171,28 @@ def main(args=None):
 
         scheduler.step(np.mean(epoch_loss))
         # if os.path.exists("../drive/My\ Drive/Colab\ Notebooks/models/facenet"):
-        if parser.save_models is not None & os.path.exists(parser.save_models):
-            path = os.path.join(parser.save_models,
-                                'retinanet_{}.pt'.format(epoch_num))
-            print("[INFO] Saving models at: {}".format(path))
-            path_last = os.path.join(
-                parser.save_models, 'retinanet_last.pt')
-            torch.save(
-                retinanet.module, path)
-            torch.save(
-                retinanet.module, path_last)
+        if parser.save_models is not None:
+            if os.path.exists(parser.save_models):
+                path = os.path.join(parser.save_models,
+                                    'retinanet_{}.pt'.format(epoch_num))
+                print("[INFO] Saving models at: {}".format(path))
+                path_last = os.path.join(
+                    parser.save_models, 'retinanet_last.pt')
+                torch.save(
+                    retinanet.module, path)
+                torch.save(
+                    retinanet.module, path_last)
+            else:
+                print("[INFO] Not found location: {}".format(
+                    os.path.exists(parser.save_models)))
+                print("[INFO] Auto saving model in: models/")
+                if not os.path.exists("models"):
+                    os.makedirs("models")
+                torch.save(retinanet.module,
+                           './models/retinanet_{}.pt'.format(epoch_num))
+                torch.save(retinanet.module,
+                           './models/retinanet_last.pt')
         else:
-            print("[INFO] Not found location: {}".format(
-                os.path.exists(parser.save_models)))
             print("[INFO] Auto saving model in: models/")
             if not os.path.exists("models"):
                 os.makedirs("models")
