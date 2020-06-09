@@ -185,11 +185,6 @@ def main(args=None):
             else:
                 print("[INFO] Not found location: {}".format(
                     parser.save_models))
-                print(os.path.exists("../drive/My\ Drive"))
-                print(os.path.exists("../drive/My\ Drive/Colab\ Notebooks"))
-                print(os.path.exists("../drive/My\ Drive/Colab\ Notebooks/models"))
-                print(os.path.exists(
-                    "../drive/My\ Drive/Colab\ Notebooks/models/facenet"))
                 print("[INFO] Auto saving model in: models/")
                 if not os.path.exists("models"):
                     os.makedirs("models")

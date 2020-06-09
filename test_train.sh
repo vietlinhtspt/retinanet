@@ -1,1 +1,1 @@
-python ./train.py  --csv_train csv_val.csv --csv_classes csv_classes.csv --save_models "../drive/My\ Drive/Colab\ Notebooks/models/facenet" --depth 18 
+python ./train.py  --csv_train csv_val.csv --csv_classes csv_classes.csv --save_models "/content/drive/My Drive/Colab Notebooks/models/facenet" --depth 18 
